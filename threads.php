@@ -10,23 +10,6 @@ Author URI: http://crowdfavorite.com
 
 // ini_set('display_errors', '1'); ini_set('error_reporting', E_ALL);
 
-/* TODO
-
-- register taxonomy
-- loop through post types and enable for all? all date based? setting?
-- trigger rebuilding of permalinks
-
-- active/inactive state for threads
-	- manual vs. auto?
-- featured threads
-- disallow parent threads
-
-- landing page /threads (selectable in admin?)
-
-- visual display of threads intersecting
-
-*/
-
 // potential future enhancement - abstract to user setting?
 function cfthr_enabled_post_types() {
 // 	$enabled = array();
