@@ -1,0 +1,3 @@
+[submodule "lib/cf-tax-post-binding"]
+	path = lib/cf-tax-post-binding
+	url = git@github.com:crowdfavorite/wp-tax-post-binding.git
