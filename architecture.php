@@ -33,7 +33,7 @@ function cfth_register_taxonomy() {
 			),
 			'sort' => true,
 			'args' => array('orderby' => 'term_order'),
-			'public' => true,
+			'public' => false,
 			'show_ui' => true,
 		)
 	);
@@ -76,9 +76,10 @@ function cfth_hide_tax_nav() {
 ?>
 <script>
 jQuery(function($) {
+	$('#newthreads_parent').remove();
 	$('a[href*="edit-tags.php?taxonomy=threads"]').hide();
 });
 </script>
 <?php
 }
-// add_action('admin_footer', 'cfth_hide_tax_nav');
+add_action('admin_footer', 'cfth_hide_tax_nav');

@@ -2,7 +2,7 @@
 
 global $post;
 
-if ( has_post_thumbnail() ) {
+if (has_post_thumbnail()) {
 ?>
 	<div class="entry-media"><?php the_post_thumbnail('medium'); ?></div>
 <?php
@@ -52,121 +52,44 @@ if (!count($posts)) {
 <div class="threads-timeline">
 <?php
 
-if (count($posts) > 1) {
-	$first = $posts[0]->post_date_gmt;
-	$last = $posts[count($posts) - 1]->post_date_gmt;
-}
-
-// echo $first.'<br />';
-// echo strtotime($first, 0).'<br>';
-// echo date('Y-m-d H:i:s', strtotime($first, 0));
-
-// check for duration, adjust margin by derrived amount
-
-// max reasonable height is 200-250px, need to take max duration, set to 200-250px, check against min height, 
-// set all others accordingly
-
-$time_offsets = array();
-$prev = null;
-foreach ($posts as $_post) {
-	$time_offsets['id_'.$_post->ID] = 0;
-	if ($prev) {
-		$prev_timestamp = strtotime($prev->post_date_gmt);
-		$this_timestamp = strtotime($_post->post_date_gmt);
-		$time_offsets['id_'.$prev->ID] = $this_timestamp - $prev_timestamp;
-	}
-	$prev = $_post;
-}
+$interescts = array();
 
 foreach ($posts as $_post) {
-	$long_ass_time = false;
-	$time_offset = $time_offsets['id_'.$_post->ID];
-	$margin = ceil($time_offset / 15000);
-	if ($time_offset > (DAY_IN_SECONDS * 90)) {
-		$long_ass_time = true;
-// calc semi-meaningful duration here
-		$margin = 0;
-		$_offset = $time_offset;
-		$y = $m = $d = 0;
-		if ($_offset > (DAY_IN_SECONDS * 365)) {
-			$y = floor($_offset / (DAY_IN_SECONDS * 365));
-			$_offset -= ($y * DAY_IN_SECONDS * 365);
-		}
-		if ($_offset > (DAY_IN_SECONDS * 60)) {
-			$m = floor($_offset / (DAY_IN_SECONDS * 30));
-			$_offset -= ($m * DAY_IN_SECONDS * 30);
-		}
-		if ($_offset > DAY_IN_SECONDS) {
-			$d = floor($_offset / DAY_IN_SECONDS);
-			$_offset -= ($d * DAY_IN_SECONDS);
-		}
-
-		if ($y > 1 && $m > 0) {
-			$lat = sprintf(__('%s Years, %s Months', 'threads'), $y, $m);
-		}
-		else if ($y > 1) {
-			$lat = sprintf(__('%s Years', 'threads'), $y);
-		}
-		else if ($y == 1) {
-			$lat = sprintf(__('1 Year, %s Months', 'threads'), $m);
-		}
-		else if ($m >= 6) {
-			$lat = sprintf(__('%s Months', 'threads'), $m, $d);
-		}
-		else if ($m > 0 && $d > 0) {
-			$lat = sprintf(__('%s Months, %s Days', 'threads'), $m, $d);
-		}
-		else if ($m > 0) {
-			$lat = sprintf(__('%s Months', 'threads'), $m);
-		}
-		else {
-			$lat = sprintf(__('%s Days', 'threads'), $d);
-		}
-	}
-	else if ($margin > 200) {
-		$margin = 200;
-	}
-	$threads = wp_get_post_terms($_post->ID, 'threads');
-	$intersect_with = array();
-	foreach ($threads as $thread) {
-		if ($thread->term_id != $term_id) {
-			$intersect_with[] = $thread;
-			if (!isset($intersects['id_'.$thread->term_id])) {
-				$intersects['id_'.$thread->term_id] = $thread;
-			}
-		}
-	}
 ?>
-	<div class="threads-item" style="margin-bottom: <?php echo $margin; ?>px">
+	<div class="threads-item" style="margin-bottom: <?php echo $_post->threads_data['margin']; ?>px">
 		<span class="date"><?php echo date('M j, Y', strtotime($_post->post_date)); ?></span>
 		<a class="title" href="<?php echo get_permalink($_post->ID); ?>"><?php echo get_the_title($_post->ID); ?></a>
 <?php
-if (!empty($intersect_with)) {
+	if (!empty($_post->threads_data['intersects'])) {
 ?>
 		<div class="intersects">
 <?php
-	$links = array();
-	foreach ($intersect_with as $thread) {
-		$post = cftpb_get_post($thread->term_id, $thread->taxonomy);
-		$links[] = '<a href="'.get_permalink($post->ID).'">'.$thread->name.'</a>';
-	}
-	$links = implode(', ', $links);
-	if (count($intersect_with) == 1) {
-		printf(__('Also in thread: %s', 'threads'), $links);
-	}
-	else {
-		printf(__('Also in threads: %s', 'threads'), $links);
-	}
+		$links = array();
+		foreach ($_post->threads_data['intersects'] as $thread) {
+			// add to full page list
+			if (!isset($intersects['id_'.$thread->term_id])) {
+				$intersects['id_'.$thread->term_id] = $thread;
+			}
+			$post = cftpb_get_post($thread->term_id, $thread->taxonomy);
+			$links[] = '<a href="'.get_permalink($post->ID).'">'.$thread->name.'</a>';
+		}
+		$links = implode(', ', $links);
+		if (count($_post->threads_data['intersects']) == 1) {
+			printf(__('Also in thread: %s', 'threads'), $links);
+		}
+		else {
+			printf(__('Also in threads: %s', 'threads'), $links);
+		}
 ?>
 		</div>
 <?php
-}
+	}
 ?>
 	</div>
 <?php
-	if ($long_ass_time) {
+	if ($_post->threads_data['lat']) {
 ?>
-	<div class="threads-lat"><?php echo $lat; ?></div>
+	<div class="threads-lat"><?php echo $_post->threads_data['lat_text']; ?></div>
 <?php
 	}
 }
