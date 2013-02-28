@@ -43,6 +43,38 @@ function cfth_thread_archive($content) {
 	return $content;
 }
 
+function cfth_thread_links($threads) {
+	$links = array();
+	foreach ($threads as $thread) {
+		$post = cftpb_get_post($thread->term_id, $thread->taxonomy);
+		$links[] = '<a href="'.get_permalink($post->ID).'">'.$thread->name.'</a>';
+	}
+	return $links;
+}
+
+function cfth_thread_notice($posts, $query) {
+	foreach ($posts as $post) {
+// check for one or more threads
+		$threads = wp_get_post_terms($post->ID, 'threads');
+		if (count($threads) > 0) {
+			$thread_links = cfth_thread_links($threads);
+			$thread_links = implode(', ', $thread_links);
+			if (count($threads) == 1) {
+				$notice_single = sprintf(__('This post is part of the thread: %s - an ongoing story on this site. View the thread timeline for more context on this post.', 'threads'), $thread_links);
+				$notice = apply_filters('cfth_thread_notice_single', $notice_single);
+			}
+			else {
+				$notice_mult = sprintf(__('This post is part of the following threads: %s - ongoing stories on this site. View the thread timelines for more context on this post.', 'threads'), $thread_links);
+				$notice = apply_filters('cfth_thread_notice_mult', $notice_mult);
+			}
+			$post->post_content .= "\n\n".'<p class="threads-post-notice">'.$notice.'</p>';
+			$post = apply_filters('cfth_thread_notice', $post, $threads);
+		}
+	}
+	return $posts;
+}
+add_filter('the_posts', 'cfth_thread_notice', 10, 2);
+
 function cfth_timeline_posts($term_id) {
 	$term = get_term_by('id', $term_id, 'threads');
 	$posts = new WP_Query(array(
@@ -173,3 +205,5 @@ function cfth_asset_url($path) {
 	$url = plugins_url($path, __FILE__);
 	return apply_filters('cfth_asset_url', $url, $path, __FILE__);
 }
+
+

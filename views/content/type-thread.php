@@ -64,15 +64,7 @@ foreach ($posts as $_post) {
 ?>
 		<div class="intersects">
 <?php
-		$links = array();
-		foreach ($_post->threads_data['intersects'] as $thread) {
-			// add to full page list
-			if (!isset($intersects['id_'.$thread->term_id])) {
-				$intersects['id_'.$thread->term_id] = $thread;
-			}
-			$post = cftpb_get_post($thread->term_id, $thread->taxonomy);
-			$links[] = '<a href="'.get_permalink($post->ID).'">'.$thread->name.'</a>';
-		}
+		$links = cfth_thread_links($_post->threads_data['intersects']);
 		$links = implode(', ', $links);
 		if (count($_post->threads_data['intersects']) == 1) {
 			printf(__('Also in thread: %s', 'threads'), $links);
@@ -96,11 +88,3 @@ foreach ($posts as $_post) {
 
 ?>
 </div>
-<?php
-
-if (!empty($intersects)) {
-?>
-<h2><?php _e('Intersects', 'threads'); ?></h2>
-<?php
-	p($intersects);
-}
