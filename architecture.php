@@ -49,7 +49,7 @@ function cfth_tax_bindings($configs) {
 			array(
 				'public' => true,
 				'show_ui' => true,
-				'label' => __('Thread', 'cfth'),
+				'label' => __('Threads', 'cfth'),
 				'rewrite' => array(
 					'slug' => 'thread',
 					'with_front' => true,
