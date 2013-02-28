@@ -149,7 +149,7 @@ function cfth_timeline_content($term_id) {
 			else if ($y == 1 && $m > 0) {
 				$lat = sprintf(__('1 Year, %s Months', 'threads'), $m);
 			}
-			else if ($y == 1) {
+			else if ($y == 1 || ($y == 0 && $m == 12)) {
 				$lat = sprintf(__('1 Year', 'threads'));
 			}
 			else if ($m >= 6) {
