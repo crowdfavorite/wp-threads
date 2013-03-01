@@ -3,8 +3,9 @@
 global $post;
 
 if (has_post_thumbnail()) {
+	$img_size = apply_filters('threads_featured_image_size', 'medium');
 ?>
-	<div class="entry-media"><?php the_post_thumbnail('medium'); ?></div>
+	<div class="threads-featured-img"><?php the_post_thumbnail($img_size); ?></div>
 <?php
 }
 
