@@ -49,6 +49,22 @@ if (!count($posts)) {
 	padding: 0 75px;
 	width: 410px;
 }
+@media screen and (max-width: 768px) {
+	.threads-timeline {
+		background-position: -90px 0;
+	}
+	.threads-item .date {
+		display: block;
+		line-height: 14px;
+		padding-left: 20px;
+		text-align: left;
+	}
+	.threads-item .title {
+		background-position: 5px 2px;
+		display: block;
+		margin-left: 0;
+	}
+}
 </style>
 <div class="threads-timeline">
 <?php
