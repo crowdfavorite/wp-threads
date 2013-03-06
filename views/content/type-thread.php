@@ -64,6 +64,10 @@ if (!count($posts)) {
 		display: block;
 		margin-left: 0;
 	}
+	.threads-item .intersects {
+		line-height: 16px;
+		margin-left: 20px;
+	}
 }
 </style>
 <div class="threads-timeline">
