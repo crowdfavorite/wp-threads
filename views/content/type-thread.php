@@ -69,6 +69,30 @@ if (!count($posts)) {
 		margin-left: 20px;
 	}
 }
+
+
+@media (min--moz-device-pixel-ratio: 1.5),
+       (-o-min-device-pixel-ratio: 3/2),
+       (-webkit-min-device-pixel-ratio: 1.5),
+       (min-device-pixel-ratio: 1.5),
+       (min-resolution: 144dpi),
+       (min-resolution: 1.5dppx) {
+ 
+	.threads-timeline {
+		background: transparent url(<?php echo cfth_asset_url('img/timeline@2x.png'); ?>) repeat-y;
+		background-size: 105px 20px;
+	}
+	.threads-item .title {
+		background: transparent url(<?php echo cfth_asset_url('img/bullet@2x.png'); ?>) left center no-repeat;
+		background-size: 11px 11px;
+	}
+	.threads-lat {
+		background: #fff url(<?php echo cfth_asset_url('img/lat@2x.png'); ?>) no-repeat;;
+		background-size: 410px 110px;
+	} 
+}
+
+
 </style>
 <div class="threads-timeline">
 <?php
