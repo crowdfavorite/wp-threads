@@ -32,7 +32,7 @@ if (!count($posts)) {
 	width: 87px;
 }
 .threads-item .title {
-	background: transparent url(<?php echo cfth_asset_url('img/bullet.png'); ?>) left center no-repeat;
+	background: transparent url(<?php echo cfth_asset_url('img/bullet-hollow.png'); ?>) left center no-repeat;
 	margin-left: 4px;
 	padding-left: 20px;
 }
@@ -41,7 +41,7 @@ if (!count($posts)) {
 	margin-left: 116px;
 }
 .threads-lat {
-	background: #fff url(<?php echo cfth_asset_url('img/lat.png'); ?>) no-repeat;;
+	background: #fff url(<?php echo cfth_asset_url('img/lat.png'); ?>) no-repeat;
 	color: #999;
 	height: 110px;
 	line-height: 110px;
@@ -69,30 +69,25 @@ if (!count($posts)) {
 		margin-left: 20px;
 	}
 }
-
-
 @media (min--moz-device-pixel-ratio: 1.5),
-       (-o-min-device-pixel-ratio: 3/2),
-       (-webkit-min-device-pixel-ratio: 1.5),
-       (min-device-pixel-ratio: 1.5),
-       (min-resolution: 144dpi),
-       (min-resolution: 1.5dppx) {
- 
+		(-o-min-device-pixel-ratio: 3/2),
+		(-webkit-min-device-pixel-ratio: 1.5),
+		(min-device-pixel-ratio: 1.5),
+		(min-resolution: 144dpi),
+		(min-resolution: 1.5dppx) {
 	.threads-timeline {
-		background: transparent url(<?php echo cfth_asset_url('img/timeline@2x.png'); ?>) repeat-y;
+		background-image: url(<?php echo cfth_asset_url('img/timeline@2x.png'); ?>);
 		background-size: 105px 20px;
 	}
 	.threads-item .title {
-		background: transparent url(<?php echo cfth_asset_url('img/bullet@2x.png'); ?>) left center no-repeat;
+		background-image: url(<?php echo cfth_asset_url('img/bullet-hollow@2x.png'); ?>);
 		background-size: 11px 11px;
 	}
 	.threads-lat {
-		background: #fff url(<?php echo cfth_asset_url('img/lat@2x.png'); ?>) no-repeat;;
+		background-image: url(<?php echo cfth_asset_url('img/lat@2x.png'); ?>);
 		background-size: 410px 110px;
 	} 
 }
-
-
 </style>
 <div class="threads-timeline">
 <?php
