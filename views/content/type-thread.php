@@ -69,7 +69,7 @@ if (!count($posts)) {
 		margin-left: 20px;
 	}
 }
-@media (min--moz-device-pixel-ratio: 1.5),
+@media 	(min--moz-device-pixel-ratio: 1.5),
 		(-o-min-device-pixel-ratio: 3/2),
 		(-webkit-min-device-pixel-ratio: 1.5),
 		(min-device-pixel-ratio: 1.5),
@@ -88,6 +88,7 @@ if (!count($posts)) {
 		background-size: 410px 110px;
 	} 
 }
+
 </style>
 <div class="threads-timeline">
 <?php
