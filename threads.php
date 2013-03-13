@@ -18,6 +18,28 @@ require(CFTH_PATH.'/lib/cf-tax-post-binding/cf-tax-post-binding.php');
 // set up custom post types and taxonomies
 require(CFTH_PATH.'/architecture.php');
 
+// check for /thread support in permalink patterns
+function cfth_permalink_check() {
+	$rewrite_rules = get_option('rewrite_rules');
+	if ($rewrite_rules == '') {
+		return;
+	}
+	global $wp_rewrite;
+	$pattern = $wp_rewrite->front.'thread/';
+	if (substr($pattern, 0, 1) == '/') {
+		$pattern = substr($pattern, 1);
+	}
+	// check for 'thread' in rewrite rules
+	foreach ($rewrite_rules as $rule => $params) {
+		if (substr($rule, 0, strlen($pattern)) == $pattern) {
+			return;
+		}
+	}
+	// flush rules if not found above
+	flush_rewrite_rules();
+}
+add_action('admin_init', 'cfth_permalink_check');
+
 // show views as appropriate
 function cfth_template_redirect() {
 	global $wp_query;
