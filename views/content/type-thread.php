@@ -2,13 +2,6 @@
 
 global $post;
 
-if (has_post_thumbnail()) {
-	$img_size = apply_filters('threads_featured_image_size', 'medium');
-?>
-	<div class="threads-featured-img"><?php the_post_thumbnail($img_size); ?></div>
-<?php
-}
-
 echo wpautop(wptexturize($post->post_content));
 
 $term_id = cftpb_get_term_id('threads', $post->ID);

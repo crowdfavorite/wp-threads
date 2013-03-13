@@ -2,8 +2,8 @@
 /*
 Plugin Name: Threads 
 Plugin URI: http://crowdfavorite.com/wordpress/plugins/ 
-Description: (description) 
-Version: 1.0dev 
+Description: Provide context for an ongoing story by showing a timeline of related posts (with a link to that timeline from each post).
+Version: 1.0b1 
 Author: Crowd Favorite
 Author URI: http://crowdfavorite.com
 */
@@ -42,27 +42,31 @@ add_action('admin_init', 'cfth_permalink_check');
 
 // show views as appropriate
 function cfth_template_redirect() {
-	global $wp_query;
 	if (is_singular('thread')) {
 		add_filter('the_content', 'cfth_thread_single', 999999);
 		return;
 	}
-	if (is_post_type_archive('thread')) {
-		add_filter('the_content', 'cfth_thread_archive', 999999);
-		return;
-	}
+// TODO
+// 	if (is_post_type_archive('thread')) {
+// 		add_filter('the_content', 'cfth_thread_archive', 999999);
+// 		return;
+// 	}
 }
 add_action('template_redirect', 'cfth_template_redirect');
 
 function cfth_thread_single($content) {
+	$view = apply_filters('threads_single_view', CFTH_PATH.'/views/content/type-thread.php');
 	ob_start();
-	include(CFTH_PATH.'/views/content/type-thread.php');
-	return ob_get_Clean();
+	include($view);
+	return ob_get_clean();
 }
 
+// TODO
 function cfth_thread_archive($content) {
-	include(CFTH_PATH.'/views/loop/type-thread.php');
-	return $content;
+	$view = apply_filters('threads_archive_view', CFTH_PATH.'/views/loop/type-thread.php');
+	ob_start();
+	include($view);
+	return ob_get_clean();
 }
 
 function cfth_thread_links($threads) {
@@ -230,5 +234,4 @@ function cfth_asset_url($path) {
 	$url = plugins_url($path, __FILE__);
 	return apply_filters('cfth_asset_url', $url, $path, __FILE__);
 }
-
 
