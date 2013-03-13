@@ -18,6 +18,9 @@ require(CFTH_PATH.'/lib/cf-tax-post-binding/cf-tax-post-binding.php');
 // set up custom post types and taxonomies
 require(CFTH_PATH.'/architecture.php');
 
+// sidebar widget
+require(CFTH_PATH.'/recent-threads-widget.php');
+
 // check for /thread support in permalink patterns
 function cfth_permalink_check() {
 	$rewrite_rules = get_option('rewrite_rules');
@@ -210,7 +213,30 @@ function cfth_timeline_content($term_id) {
 }
 
 function cfth_update_thread_date($post_id, $post) {
-	if ($post->post_status == 'publish') {
+	if ($post->post_type == 'thread') {
+// don't infinite loop
+		remove_action('save_post', 'cfth_update_thread_date', 10, 2);
+// get term
+		$term_id = cftpb_get_term_id('threads', $post_id);
+		$term = get_term($term_id, 'threads');
+// get most recent post
+		$query = new WP_Query(array(
+			'posts_per_page' => 1,
+			'taxonomy' => 'threads',
+			'term' => $term->slug,
+			'order' => 'DESC'
+		));
+		if (count($query->posts == 1)) {
+			$thread_post = $query->posts[0];
+// get term post, update with date
+			wp_update_post(array(
+				'ID' => $post_id,
+				'post_date' => $thread_post->post_date,
+				'post_date_gmt' => $thread_post->post_date_gmt,
+			));
+		}
+	}
+	else if ($post->post_status == 'publish') {
 // get threads
 		$threads = wp_get_post_terms($post->ID, 'threads');
 // update each thread date with current date
