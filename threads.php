@@ -10,16 +10,16 @@ Author URI: http://crowdfavorite.com
 
 // ini_set('display_errors', '1'); ini_set('error_reporting', E_ALL);
 
-define('CFTH_PATH', plugin_dir_path(__FILE__));
+define('CFTH_PATH', trailingslashit(plugin_dir_path(__FILE__)));
 
 // utility library for binding custom taxonomies and post types together
-require(CFTH_PATH.'/lib/cf-tax-post-binding/cf-tax-post-binding.php');
+require(CFTH_PATH.'lib/cf-tax-post-binding/cf-tax-post-binding.php');
 
 // set up custom post types and taxonomies
-require(CFTH_PATH.'/architecture.php');
+require(CFTH_PATH.'architecture.php');
 
 // sidebar widget
-require(CFTH_PATH.'/recent-threads-widget.php');
+require(CFTH_PATH.'recent-threads-widget.php');
 
 // check for /thread support in permalink patterns
 function cfth_permalink_check() {
@@ -47,6 +47,7 @@ add_action('admin_init', 'cfth_permalink_check');
 function cfth_template_redirect() {
 	if (is_singular('thread')) {
 		add_filter('the_content', 'cfth_thread_single', 999999);
+		add_action('wp_head', 'cfth_timeline_css');
 		return;
 	}
 // TODO
@@ -58,19 +59,47 @@ function cfth_template_redirect() {
 add_action('template_redirect', 'cfth_template_redirect');
 
 function cfth_thread_single($content) {
-	$view = apply_filters('threads_single_view', CFTH_PATH.'/views/content/type-thread.php');
+	global $post;
+	if ($post->post_type == 'thread') {
+		$term_id = cftpb_get_term_id('threads', $post->ID);
+		$view = apply_filters('threads_single_view', CFTH_PATH.'views/content/type-thread.php');
+		ob_start();
+		include($view);
+		$content = ob_get_clean();
+	}
+	return $content;
+}
+
+// TODO
+function cfth_thread_archive($content) {
+	$view = apply_filters('threads_archive_view', CFTH_PATH.'views/loop/type-thread.php');
 	ob_start();
 	include($view);
 	return ob_get_clean();
 }
 
-// TODO
-function cfth_thread_archive($content) {
-	$view = apply_filters('threads_archive_view', CFTH_PATH.'/views/loop/type-thread.php');
+function cfth_thread_timeline($term_id) {
+	$posts = cfth_timeline_content($term_id);
+	$view = apply_filters('threads_timeline_view', CFTH_PATH.'views/content/timeline.php');
 	ob_start();
 	include($view);
 	return ob_get_clean();
 }
+
+function cfth_timeline_shortcode($atts) {
+	extract(shortcode_atts(array(
+		'term' => null,
+	), $atts));
+	$_term = get_term_by('slug', $term, 'threads');
+	if (empty($_term) || is_wp_error($_term)) {
+		return '<p>'.sprintf(__('Sorry, could not find a thread: <i>%s</i>', 'threads'), esc_html($term)).'</p>';
+	}
+	ob_start();
+	cfth_timeline_css();
+	$css = ob_get_clean();
+	return $css.cfth_thread_timeline($_term->term_id);
+}
+add_shortcode('thread', 'cfth_timeline_shortcode');
 
 function cfth_thread_links($threads) {
 	$links = array();
@@ -259,5 +288,86 @@ add_action('save_post', 'cfth_update_thread_date', 10, 2);
 function cfth_asset_url($path) {
 	$url = plugins_url($path, __FILE__);
 	return apply_filters('cfth_asset_url', $url, $path, __FILE__);
+}
+
+function cfth_timeline_css() {
+	$css = apply_filters('threads_timeline_css', '');
+	if (!empty($css)) {
+		echo $css;
+		return;
+	}
+?>
+<style>
+.threads-timeline {
+	background: transparent url(<?php echo cfth_asset_url('img/timeline.png'); ?>) repeat-y;
+	padding: 20px 0;
+}
+.threads-item .date {
+	color: #666;
+	display: inline-block;
+	font-size: 85%;
+	margin-right: 3px;
+	text-align: right;
+	width: 88px;
+}
+.threads-item .title {
+	background: transparent url(<?php echo cfth_asset_url('img/bullet-hollow.png'); ?>) left center no-repeat;
+	margin-left: 4px;
+	padding-left: 20px;
+}
+.threads-item .intersects {
+	font-size: 85%;
+	margin-left: 116px;
+}
+.threads-lat {
+	background: #fff url(<?php echo cfth_asset_url('img/lat.png'); ?>) no-repeat;
+	color: #999;
+	height: 110px;
+	line-height: 110px;
+	margin: 10px 0;
+	padding: 0 75px;
+	width: 410px;
+}
+@media screen and (max-width: 768px) {
+	.threads-timeline {
+		background-position: -90px 0;
+	}
+	.threads-item .date {
+		display: block;
+		line-height: 14px;
+		padding-left: 20px;
+		text-align: left;
+	}
+	.threads-item .title {
+		background-position: 5px 2px;
+		display: block;
+		margin-left: 0;
+	}
+	.threads-item .intersects {
+		line-height: 16px;
+		margin-left: 20px;
+	}
+}
+@media 	(min--moz-device-pixel-ratio: 1.5),
+		(-o-min-device-pixel-ratio: 3/2),
+		(-webkit-min-device-pixel-ratio: 1.5),
+		(min-device-pixel-ratio: 1.5),
+		(min-resolution: 144dpi),
+		(min-resolution: 1.5dppx) {
+	.threads-timeline {
+		background-image: url(<?php echo cfth_asset_url('img/timeline@2x.png'); ?>);
+		background-size: 105px 20px;
+	}
+	.threads-item .title {
+		background-image: url(<?php echo cfth_asset_url('img/bullet-hollow@2x.png'); ?>);
+		background-size: 11px 11px;
+	}
+	.threads-lat {
+		background-image: url(<?php echo cfth_asset_url('img/lat@2x.png'); ?>);
+		background-size: 410px 110px;
+	} 
+}
+</style>
+<?php
 }
 
