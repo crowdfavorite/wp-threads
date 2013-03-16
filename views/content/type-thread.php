@@ -2,4 +2,4 @@
 
 echo wpautop(wptexturize($post->post_content));
 
-cfth_thread_timeline($term_id);
+echo cfth_thread_timeline($term_id);
