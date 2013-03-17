@@ -76,8 +76,7 @@ function cfth_hide_tax_nav() {
 ?>
 <script>
 jQuery(function($) {
-	$('#newthreads_parent').remove();
-	$('a[href*="edit-tags.php?taxonomy=threads"]').hide();
+	$('#newthreads_parent, #menu-posts-thread').remove();
 });
 </script>
 <?php

@@ -3,7 +3,7 @@
 class WP_Widget_Recent_Threads extends WP_Widget {
 
 	function __construct() {
-		$widget_ops = array('classname' => 'widget_recent_threads', 'description' => __( "The recently active Threads on your site.") );
+		$widget_ops = array('classname' => 'widget_recent_threads', 'description' => __( "Recently active Threads on your site.") );
 		parent::__construct('recent-threads', __('Recent Threads'), $widget_ops);
 		$this->alt_option_name = 'widget_recent_threads';
 
@@ -26,7 +26,7 @@ class WP_Widget_Recent_Threads extends WP_Widget {
 		ob_start();
 		extract($args);
 
-		$title = apply_filters('widget_title', empty($instance['title']) ? __('Recent Posts') : $instance['title'], $instance, $this->id_base);
+		$title = apply_filters('widget_title', empty($instance['title']) ? __('Recent Threads') : $instance['title'], $instance, $this->id_base);
 		if ( ! $number = absint( $instance['number'] ) )
 			$number = 10;
 
