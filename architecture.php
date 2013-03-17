@@ -72,7 +72,19 @@ function cfth_tax_bindings($configs) {
 }
 add_filter('cftpb_configs', 'cfth_tax_bindings');
 
-function cfth_hide_tax_nav() {
+// hide to avoid FOUC
+function cfth_hide_tax_nav_css() {
+?>
+<style>
+#newthreads_parent, #menu-posts-thread {
+	display: none;
+}
+</style>
+<?php
+}
+add_action('admin_head', 'cfth_hide_tax_nav_css');
+
+function cfth_hide_tax_nav_js() {
 ?>
 <script>
 jQuery(function($) {
@@ -81,4 +93,17 @@ jQuery(function($) {
 </script>
 <?php
 }
-add_action('admin_footer', 'cfth_hide_tax_nav');
+add_action('admin_footer', 'cfth_hide_tax_nav_js');
+
+// hide View link for threads taxonomy terms
+function cfth_tag_row_actions($actions, $tag) {
+	global $taxonomy, $tax;
+	$post = cf_taxonomy_post_type_binding::get_term_post($tag->term_id, 'threads');
+	if (empty($post) || is_wp_error($post)) {
+		return $actions;
+	}
+	unset($actions['view']);
+	return $actions;
+}
+add_filter('tag_row_actions', 'cfth_tag_row_actions', 10, 2);
+

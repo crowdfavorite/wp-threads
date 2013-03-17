@@ -253,6 +253,7 @@ function cfth_update_thread_date($post_id, $post) {
 			'posts_per_page' => 1,
 			'taxonomy' => 'threads',
 			'term' => $term->slug,
+			'post_status' => 'publish',
 			'order' => 'DESC'
 		));
 		if (count($query->posts == 1)) {
