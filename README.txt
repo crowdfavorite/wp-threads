@@ -40,6 +40,43 @@ Shortcode syntax:
 
 Threads has been tested with <a href="http://crowdfavorite.com/wordpress/themes/favepersonal/">FavePersonal</a>, Twenty Ten, Twenty Eleven, Twenty Twelve and Twenty Thirteen (beta). We hope it will be compatible with most themes, but cannot guarantee compatibility with any specific theme.
 
+= How can I list my posts from newest to oldest instead of vice versa? =
+
+You can override the thread view to create any presentation you like. You can also adjust how the timeline posts are retrieved using the `threads_timeline_posts_query` filter.
+
+= How can I show posts from a thread in a different way? =
+
+If you want to use different images, you can use the filters to use your own. Example, changing the background for the "long time break":
+
+	function my_custom_background($url, $path, $plugin_file_path) {
+		// check for the file we want to change
+		if ($path == 'img/lat.png') [
+			// change it to the full HTTP path we want to use
+			$path = 'http://example.com/path/to/your/background.png');
+		}
+		return $path;
+	}
+	add_filter('cfth_asset_url', 'my_custom_background', 10, 3);
+
+If you want to output different CSS, that's easy as well. Example:
+
+	function my_custom_css($my_css) {
+		$my_css = '<style>
+			.threads-timeline {
+				/* your CSS rules here */
+			}
+			/* ... */
+		</style>';
+		return $css;
+	}
+	add_filter('threads_timeline_css', 'my_custom_css');
+
+This utilizes the <a href="http://codex.wordpress.org/Plugin_API">WordPress Plugin API</a> - it's how to customize something without having to hack the code (and lose your changes on upgrade).
+
+If you want to do a completely different presentation of your thread, that's straightforward too. The thread is connected by a custom taxonomy term - you can query on this term to get the posts and present them any way you like.
+
+If you don't want to write your own code, you may find that a plugin like <a href="http://wordpress.org/extend/plugins/query-posts/">Query Posts</a> is a good solution for you.
+
 = Why isn't my question listed here? =
 
 Ask them in the support forums and we'll add them here as they are answered.
