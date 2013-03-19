@@ -89,6 +89,12 @@ function cfth_hide_tax_nav_js() {
 <script>
 jQuery(function($) {
 	$('#newthreads_parent, #menu-posts-thread').remove();
+	$('body.edit-tags-php #addtag, body.edit-tags-php #edittag').each(function() {
+		var tax = $(this).find('input[name="taxonomy"]').val();
+		if (tax == 'threads') {
+			$('#parent').closest('.form-field').remove();
+		}
+	});
 });
 </script>
 <?php
