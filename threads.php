@@ -136,12 +136,13 @@ add_filter('the_posts', 'cfth_thread_notice', 10, 2);
 function cfth_timeline_posts($term_id) {
 	$term = get_term_by('id', $term_id, 'threads');
 	if ($term) {
-		$query = new WP_Query(array(
+		$query_params = apply_filters('threads_timeline_posts_query', array(
 			'posts_per_page' => -1,
 			'taxonomy' => 'threads',
 			'term' => $term->slug,
 			'order' => 'ASC',
 		));
+		$query = new WP_Query($query_params);
 		return $query->posts;
 	}
 	return array();
