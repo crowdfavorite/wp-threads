@@ -15,7 +15,7 @@ If you have ongoing themes you write about on your site, you can use Threads to 
 
 Another good usage of Threads is on a news site to track posts related to a single ongoing story. For example, a tech blog might create a thread to group stories about a product launch event. Several months later, stories about sales figures for the product might be added to the thread. By placing all of these posts in a thread, there is a useful visual way of browsing all of the posts.
 
-The timeline display of a thread is both responsive and retina (HiDPI) friendly. See an <a href="https://alexking.org/blog/thread/content">example here</a>.
+The timeline display of a thread is both responsive and retina (HiDPI) friendly. See an <a href="http://alexking.org/blog/thread/content">example here</a>.
 
 Developers, please contribute on <a href="https://github.com/crowdfavorite/wp-threads">GitHub</a>.
 

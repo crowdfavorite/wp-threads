@@ -273,14 +273,16 @@ function cfth_update_thread_date($post_id, $post) {
 // update each thread date with current date
 		foreach ($threads as $thread) {
 			$_post = cftpb_get_post($thread->term_id, 'threads');
-			$now = current_time('mysql');
-			if ($now > $_post->post_date) {
-				$data = array(
-					'ID' => $_post->ID,
-					'post_date' => $now,
-					'post_date_gmt' => current_time('mysql', 1),
-				);
-				wp_update_post($data);
+			if ($_post) {
+				$now = current_time('mysql');
+				if ($now > $_post->post_date) {
+					$data = array(
+						'ID' => $_post->ID,
+						'post_date' => $now,
+						'post_date_gmt' => current_time('mysql', 1),
+					);
+					wp_update_post($data);
+				}
 			}
 		}
 	}
