@@ -125,8 +125,9 @@ function cfth_thread_notice($posts, $query) {
 				$notice_mult = sprintf(__('This post is part of the following threads: %s - ongoing stories on this site. View the thread timelines for more context on this post.', 'threads'), $thread_links);
 				$notice = apply_filters('cfth_thread_notice_mult', $notice_mult);
 			}
-			$post->post_content .= "\n\n".'<p class="threads-post-notice">'.$notice.'</p>';
-			$post = apply_filters('cfth_thread_notice', $post, $threads);
+			$notice_html = "\n\n".'<p class="threads-post-notice">'.$notice.'</p>';
+			$notice_html = apply_filters('cfth_thread_notice', $notice_html, $post, $threads);
+			$post->post_content .= $notice_html;
 		}
 	}
 	return $posts;
