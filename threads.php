@@ -419,7 +419,7 @@ add_action( 'threads_edit_form_fields', 'threads_taxonomy_edit_meta_field', 10, 
 // Save meta field for thread taxonomy.
 function save_threads_custom_meta( $term_id ) {
 	if ( isset( $_POST['term_meta'] ) ) {
-		$term_meta = get_option( "threads_meta" );
+		$term_meta = get_term_meta( $term_id, 'threads_meta', true );
 		$cat_keys = array_keys( $_POST['term_meta'] );
 
 		foreach ( $cat_keys as $key ) {
