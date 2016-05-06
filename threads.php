@@ -135,8 +135,10 @@ add_filter('the_posts', 'cfth_thread_notice', 10, 2);
 
 function cfth_timeline_posts($term_id) {
 	$term = get_term_by('id', $term_id, 'threads');
-	$term_meta = get_term_meta( $term_id, 'threads_meta', true );
-	$order = ( isset( $term_meta['order_term_meta'] )) ? $term_meta['order_term_meta'] : 'ASC';
+	if ( function_exists( 'get_term_meta' ) ) {
+		$term_meta = get_term_meta( $term_id, 'threads_meta', true );
+	}
+	$order = isset( $term_meta['order_term_meta'] ) ? $term_meta['order_term_meta'] : 'ASC';
 	if ($term) {
 		$query_params = apply_filters('threads_timeline_posts_query', array(
 			'posts_per_page' => -1,
@@ -152,8 +154,10 @@ function cfth_timeline_posts($term_id) {
 
 function cfth_timeline_content($term_id) {
 	$term = get_term_by('id', $term_id, 'threads');
-	$term_meta = get_term_meta( $term_id, 'threads_meta', true );
-	$order = ( isset( $term_meta['order_term_meta'] )) ? $term_meta['order_term_meta'] : 'ASC';
+	if ( function_exists( 'get_term_meta' ) ) {
+		$term_meta = get_term_meta( $term_id, 'threads_meta', true );
+	}
+	$order = isset( $term_meta['order_term_meta'] ) ? $term_meta['order_term_meta'] : 'ASC';
 	$posts = cfth_timeline_posts($term_id);
 	if (!count($posts)) {
 		return array();
@@ -175,7 +179,14 @@ function cfth_timeline_content($term_id) {
 		if ($prev) {
 			$prev_timestamp = strtotime($prev->post_date_gmt);
 			$this_timestamp = strtotime($_post->post_date_gmt);
-			$prev->threads_data['time_offset'] = ( isset( $term_meta['order_term_meta'] ) && 'DESC' === $term_meta['order_term_meta']) ? $prev_timestamp - $this_timestamp : $this_timestamp - $prev_timestamp;
+
+			if( isset( $term_meta['order_term_meta'] ) && 'DESC' === $term_meta['order_term_meta'] ) {
+				// offset calculation if post order selected as DESC.
+				$prev->threads_data['time_offset'] = $prev_timestamp - $this_timestamp;
+			} else {
+				// offset calculation if post order selected as ASC.
+				$prev->threads_data['time_offset'] = $this_timestamp - $prev_timestamp;
+			}
 		}
 		$prev = $_post;
 	}
@@ -380,58 +391,66 @@ function cfth_timeline_css() {
 <?php
 }
 
-// Meta field markup for add thread page
-function threads_taxonomy_add_new_meta_field() {
+/**
+ * Meta field markup for add thread page.
+ *
+ * @since 1.0b1
+ */
+function cfth_taxonomy_add_new_meta_field() {
 	?>
 	<div class="form-field">
 		<label for="term_meta[order_term_meta]"><?php _e( 'Post order', 'threads' ); ?></label>
 			<select name="term_meta[order_term_meta]" id="term_meta[order_term_meta]">
-				<option value="ASC"><?php _e( 'ASC', 'threads' ); ?></option>
-				<option value="DESC"><?php _e( 'DESC', 'threads' ); ?></option>
+				<option value="ASC"><?php esc_html_e( 'Oldest to Newest (ASC)', 'threads' ); ?></option>
+				<option value="DESC"><?php esc_html_e( 'Newest to Oldest (DESC)', 'threads' ); ?></option>
 			</select>
-		<p class="description"><?php _e( 'Enter a value for this field','threads' ); ?></p>
+		<p class="description"><?php esc_html_e( 'Sort threaded posts with newest first (DESC), or oldest first (ASC).','threads' ); ?></p>
 	</div>
 <?php
 }
 
-add_action( 'threads_add_form_fields', 'threads_taxonomy_add_new_meta_field', 10, 2 );
+add_action( 'threads_add_form_fields', 'cfth_taxonomy_add_new_meta_field' );
 
-// Meta field markup for edit thread page
-function threads_taxonomy_edit_meta_field( $term ) {
-	$term_meta = get_term_meta( $term->term_id, 'threads_meta', true ); 
+/**
+ * Meta field markup for edit thread page.
+ *
+ * @since 1.0b1
+ */
+function cfth_taxonomy_edit_meta_field( $term ) {
+	if ( function_exists( 'get_term_meta' ) ) {
+		$term_meta = get_term_meta( $term->term_id, 'threads_meta', true );
+	}
 	?>
 
 	<tr class="form-field">
 		<th scope="row" valign="top"><label for="term_meta[order_term_meta]"><?php _e( 'Post order', 'threads' ); ?></label></th>
 		<td>
 			<select name="term_meta[order_term_meta]" id="term_meta[order_term_meta]">
-				<option value="ASC" <?php echo ( isset( $term_meta['order_term_meta'] ) && 'ASC' === $term_meta['order_term_meta'] )? 'selected' : ''; ?> ><?php _e( 'ASC', 'threads' ); ?></option>
-				<option value="DESC" <?php echo ( isset( $term_meta['order_term_meta'] ) && 'DESC' === $term_meta['order_term_meta'] )? 'selected' : ''; ?>><?php _e( 'DESC', 'threads' ); ?></option>
+				<option value="ASC" <?php selected( $term_meta['order_term_meta'], 'ASC' ); ?> ><?php esc_html_e( 'Oldest to Newest (ASC)', 'threads' ); ?></option>
+				<option value="DESC" <?php selected( $term_meta['order_term_meta'], 'DESC' ); ?> ><?php esc_html_e( 'Newest to Oldest (DESC)', 'threads' ); ?></option>
 			</select>
-			<p class="description"><?php _e( 'Enter a value for this field','threads' ); ?></p>
+			<p class="description"><?php esc_html_e( 'Sort threaded posts with newest first (DESC), or oldest first (ASC).','threads' ); ?></p>
 		</td>
 	</tr>
 	<?php
 }
 
-add_action( 'threads_edit_form_fields', 'threads_taxonomy_edit_meta_field', 10, 2 );
+add_action( 'threads_edit_form_fields', 'cfth_taxonomy_edit_meta_field' );
 
-// Save meta field for thread taxonomy.
-function save_threads_custom_meta( $term_id ) {
+/**
+ * Save meta field for thread taxonomy.
+ *
+ * @since 1.0b1
+ */
+function cfth_save_threads_custom_meta( $term_id ) {
 	if ( isset( $_POST['term_meta'] ) ) {
-		$term_meta = get_term_meta( $term_id, 'threads_meta', true );
-		$cat_keys = array_keys( $_POST['term_meta'] );
-
-		foreach ( $cat_keys as $key ) {
-			if ( isset ( $_POST['term_meta'][$key] ) ) {
-				$term_meta[$key] = $_POST['term_meta'][$key];
-			}
+		$term_meta = array_map( 'esc_attr', $_POST['term_meta'] );
+		if ( function_exists( 'update_term_meta' ) ) {
+			update_term_meta( $term_id, 'threads_meta', $term_meta );
 		}
-
-		update_term_meta( $term_id, 'threads_meta', $term_meta );
 	}
 }
 
-add_action( 'edited_threads', 'save_threads_custom_meta', 10, 2 );
-add_action( 'create_threads', 'save_threads_custom_meta', 10, 2 );
+add_action( 'edited_threads', 'cfth_save_threads_custom_meta' );
+add_action( 'create_threads', 'cfth_save_threads_custom_meta' );
 

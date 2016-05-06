@@ -1,8 +1,8 @@
 === Plugin Name ===
 Contributors: alexkingorg, crowdfavorite
 Tags: content, timeline, display, presentation, story, storyline, context
-Requires at least: 3.5
-Tested up to: 3.5.1
+Requires at least: 4.4.0
+Tested up to: 4.5.1
 Stable tag: 1.0b1
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
